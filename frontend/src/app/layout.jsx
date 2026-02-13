@@ -2,7 +2,7 @@
 
 import { Provider } from "react-redux";
 import store from "../config/redux/store";
-import app from "./app";
+import "./globals.css";
 
 
 export default function RootLayout({ children }) {
@@ -11,12 +11,7 @@ export default function RootLayout({ children }) {
       <body>
         <Provider store={store}>
           {children}
-          <div>hello</div>
-          <app>
-
-          </app>
         </Provider>
-
       </body>
     </html>
   );
