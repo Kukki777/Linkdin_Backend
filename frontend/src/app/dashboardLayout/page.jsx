@@ -1,31 +1,40 @@
 'use client';
+
 import React, { useEffect } from "react";
 import styles from "./page.module.css";
 import { useRouter } from "next/navigation";
 import { setTokenIsThere } from "../../config/redux/reducer/authReducer";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function DashboardLayout({ children }) {
-    const router=useRouter();
+  const router = useRouter();
+  const authState = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
 
-    const dispatch=useDispatch();
-    
-      useEffect(() => {
-        const storedToken = localStorage.getItem("token");
-        if (!storedToken) {
-          router.push("/login");
-        } else {
-         dispatch(setTokenIsThere());
-        }
-      });
+  // Check token on load
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+
+    if (!storedToken) {
+      router.push("/login");
+    } else {
+      dispatch(setTokenIsThere());
+    }
+  }, [dispatch, router]);
+
   return (
     <div>
       <div className="container">
         <div className={styles.homeContainer}>
+
+          {/* Left Sidebar */}
           <div className={styles.homeContainer__leftBar}>
-            <div onClick={() => {
-              router.push("/dashboard")
-            }} className={styles.sideBarOption}>
+
+            {/* Dashboard */}
+            <div
+              onClick={() => router.push("/dashboard")}
+              className={styles.sideBarOption}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -43,9 +52,12 @@ export default function DashboardLayout({ children }) {
 
               <p>Scroll</p>
             </div>
-            <div onClick={() => {
-              router.push("/discover")
-            }}className={styles.sideBarOption}>
+
+            {/* Discover */}
+            <div
+              onClick={() => router.push("/discover")}
+              className={styles.sideBarOption}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -63,9 +75,12 @@ export default function DashboardLayout({ children }) {
 
               <p>Discover</p>
             </div>
-            <div onClick={() => {
-              router.push("/myconnections")
-            }}className={styles.sideBarOption}>
+
+            {/* My Connections */}
+            <div
+              onClick={() => router.push("/myconnections")}
+              className={styles.sideBarOption}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -83,13 +98,32 @@ export default function DashboardLayout({ children }) {
 
               <p>My Connections</p>
             </div>
+
           </div>
 
-          <div className="homeContainer__feedContainer">{children}</div>
-          <div className="homeContainer__extraContainer">
-            <h3>Top Profiles</h3>
-            {authState.all_profiles_fetched &&}
+          {/* Feed */}
+          <div className="homeContainer__feedContainer">
+            {children}
           </div>
+
+          {/* Right Panel */}
+          <div className="homeContainer__extraContainer">
+
+            <h3>Top Profiles</h3>
+            {authState.all_profiles_fetched &&
+  authState.all_users?.length > 0 &&
+  authState.all_users.map((profile) => (
+    <div
+      key={profile._id}
+      className={styles.extraContainer__profile}
+    >
+      <p>{profile.userId?.name}</p>
+    </div>
+  ))
+}
+
+          </div>
+
         </div>
       </div>
     </div>

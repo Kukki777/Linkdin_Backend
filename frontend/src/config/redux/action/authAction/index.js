@@ -78,16 +78,16 @@ export const getAboutUser = createAsyncThunk(
   }
 );
 
-export const getAllUsers= createAsyncThunk(
-        "user/getAllUsers",
-        async (thunkAPI) => {
-            try {
-                const response = await clientServer.get("/user/get_all_users");
-                return thunkAPI.fulfillWithValue(response.data);
-            } catch (error) {
-                return thunkAPI.rejectWithValue(
-                    error.response?.data?.message || error.message || "Login failed"
-                );
-            }
-        }
-    );
+export const getAllUsers = createAsyncThunk(
+  "user/getAllUsers",
+  async (_, thunkAPI) => {
+    try {
+      const response = await clientServer.get("/user/get_all_users");
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || error.message || "Failed to fetch users"
+      );
+    }
+  }
+);
