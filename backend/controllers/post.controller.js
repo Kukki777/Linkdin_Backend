@@ -56,6 +56,13 @@ console.log("POST COUNT:", await Post.countDocuments());
   try {
     const posts = await Post.find()
       .populate("userId", "name username email profilePicture createdAt")
+      .populate({
+        path: "sharedPostId",
+        populate: {
+          path: "userId",
+          select: "name username email profilePicture createdAt",
+        },
+      })
       .sort({ createdAt: -1 });
 
     return res.status(200).json({
@@ -63,6 +70,75 @@ console.log("POST COUNT:", await Post.countDocuments());
     });
   } catch (error) {
     console.error("Error fetching posts:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const getPostsByUsername = async (req, res) => {
+  const username = req.query?.username || req.params?.username;
+  try {
+    if (!username) {
+      return res.status(400).json({ message: "username is required" });
+    }
+
+    const user = await User.findOne({ username }).select("_id");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const posts = await Post.find({ userId: user._id })
+      .populate("userId", "name username email profilePicture createdAt")
+      .populate({
+        path: "sharedPostId",
+        populate: {
+          path: "userId",
+          select: "name username email profilePicture createdAt",
+        },
+      })
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({ posts });
+  } catch (error) {
+    console.error("Error fetching posts by username:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const sharePost = async (req, res) => {
+  const { token, post_id } = req.body;
+  try {
+    const user = await User.findOne({ token }).select("_id");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const originalPost = await Post.findById(post_id).select("_id");
+    if (!originalPost) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    const repost = new Post({
+      userId: user._id,
+      body: "Shared a post",
+      media: "",
+      fileType: "",
+      isShared: true,
+      sharedPostId: originalPost._id,
+    });
+
+    await repost.save();
+    await repost.populate("userId", "name username email profilePicture createdAt");
+    await repost.populate({
+      path: "sharedPostId",
+      populate: {
+        path: "userId",
+        select: "name username email profilePicture createdAt",
+      },
+    });
+
+    return res.json({ message: "Post shared successfully", post: repost });
+  } catch (error) {
+    console.error("Error in share post controller:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -96,17 +172,18 @@ export const commentPost = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    const comments = await Comment.find({ postId: post_id });
+    const post = await Post.findOne({ _id: post_id }).select("_id");
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
     const newComment = new Comment({
       postId: post_id,
       userId: user._id,
-      comment: commentBody,
+      body: commentBody,
     });
     await newComment.save();
-    return res.json({ message: "Comment added successfully" });
+    await newComment.populate("userId", "name username profilePicture");
+    return res.json({ message: "Comment added successfully", comment: newComment });
   } catch (error) {
     console.error("Error in get user and profile controller:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -114,12 +191,12 @@ export const commentPost = async (req, res) => {
 };
 
 export const get_comment_by_post = async (req, res) => {
-  const { post_id } = req.body;
+  const post_id = req.body?.post_id || req.query?.post_id;
   try {
-    const comments = await Comment.find({ _id: post_id });
-    if (!comments || comments.length === 0) {
-      return res.status(404).json({ message: "No comments found" });
-    }
+    const comments = await Comment.find({ postId: post_id }).populate(
+      "userId",
+      "name username profilePicture"
+    );
     return res.json({ comments });
   } catch (error) {
     console.error("Error in get user and profile controller:", error);
@@ -150,15 +227,45 @@ export const delete_comment_of_user = async (req, res) => {
 };
 
 export const increment_likes = async (req, res) => {
-  const { post_id } = req.body;
+  const post_id = req.body?.post_id || req.query?.post_id;
+  const token = req.body?.token || req.query?.token;
   try {
+    const user = await User.findOne({ token }).select("_id");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
     const post = await Post.findOne({ _id: post_id });
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
+
+    const alreadyLiked = Array.isArray(post.likedBy)
+      ? post.likedBy.some((id) => id.toString() === user._id.toString())
+      : false;
+    if (alreadyLiked) {
+      post.likedBy = (post.likedBy || []).filter(
+        (id) => id.toString() !== user._id.toString()
+      );
+      post.likes = Math.max((post.likes || 0) - 1, 0);
+      await post.save();
+      return res.json({
+        message: "Like removed successfully",
+        likes: post.likes,
+        likedByUserId: user._id.toString(),
+        liked: false,
+      });
+    }
+
+    post.likedBy = [...(post.likedBy || []), user._id];
     post.likes = post.likes + 1;
     await post.save();
-    return res.json({ message: "Likes incremented successfully" });
+    return res.json({
+      message: "Likes incremented successfully",
+      likes: post.likes,
+      likedByUserId: user._id.toString(),
+      liked: true,
+    });
   } catch (error) {
     console.error("Error in get user and profile controller:", error);
     res.status(500).json({ message: "Internal server error" });

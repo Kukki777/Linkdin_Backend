@@ -6,6 +6,16 @@ import ConnectionRequest from "../models/connection.model.js";
 import Profile from "../models/profile.model.js";
 import fs from "fs";
 
+const withDefaultBio = (profileDoc) => {
+  if (!profileDoc) return profileDoc;
+  const profile = profileDoc.toObject ? profileDoc.toObject() : { ...profileDoc };
+  const bio = typeof profile.bio === "string" ? profile.bio.trim() : "";
+  return {
+    ...profile,
+    bio: bio || "No bio available",
+  };
+};
+
 const convertUserDataToPDF = async (userData) => {
   const doc = new PDFDocument();
   const outputPath = crypto.randomBytes(16).toString("hex") + ".pdf";
@@ -176,7 +186,7 @@ export const getUserProfile = async (req, res) => {
       "userId",
       "name username email profilePicture createdAt",
     );
-    return res.json(userProfile);
+    return res.json(withDefaultBio(userProfile));
   } catch (error) {
     console.error("Error in get user and profile controller:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -217,7 +227,7 @@ export const getAllUserProfile = async (req, res) => {
       "userId",
       "name username email profilePicture createdAt",
     );
-    return res.json(profiles);
+    return res.json(profiles.map(withDefaultBio));
   } catch (error) {
     console.error("Error in get all user profiles controller:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -267,7 +277,7 @@ export const sendConnectionRequest = async (req, res) => {
 };
 
 export const getMyConnectionsRequest = async (req, res) => {
-  const { token } = req.body;
+  const token = req.body?.token || req.query?.token;
   try {
     const user = await User.findOne({ token });
     if (!user) {
@@ -276,7 +286,7 @@ export const getMyConnectionsRequest = async (req, res) => {
     const connections = await ConnectionRequest.find({ userId: user._id })
       .populate("userId", "name username email profilePicture createdAt")
       .populate("connectionId", "name username email profilePicture createdAt");
-    return res.json(connections);
+    return res.json({ connections });
   } catch (error) {
     console.error("Error in get user and profile controller:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -284,7 +294,7 @@ export const getMyConnectionsRequest = async (req, res) => {
 };
 
 export const whatAreMyConnection = async (req, res) => {
-  const { token } = req.body;
+  const token = req.body?.token || req.query?.token;
 
   try {
     const user = await User.findOne({ token });
@@ -295,7 +305,7 @@ export const whatAreMyConnection = async (req, res) => {
     const connections = await ConnectionRequest.find({
       connectionId: user._id,
     }).populate("userId", "name username email profilePicture createdAt");
-    return res.json(connections);
+    return res.json({ connections });
   } catch (error) {
     console.error("Error in get user and profile controller:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -320,6 +330,28 @@ export const acceptConnectionRequest = async (req, res) => {
     }
     await connection.save();
     return res.json({ message: "Connection request updated successfully" });
+  } catch (error) {
+    console.error("Error in get user and profile controller:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const getUserProfileAndUserBasedOnUsername = async (req, res) => {
+  const username = req.query.username || req.params.username;
+  try {
+    if (!username) {
+      return res.status(400).json({ message: "username is required" });
+    }
+
+    const user = await User.findOne({ username }).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const userProfile = await Profile.findOne({ userId: user._id }).populate(
+      "userId",
+      "name username email profilePicture createdAt",
+    );
+    return res.json(withDefaultBio(userProfile));
   } catch (error) {
     console.error("Error in get user and profile controller:", error);
     res.status(500).json({ message: "Internal server error" });

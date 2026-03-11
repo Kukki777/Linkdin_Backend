@@ -14,7 +14,13 @@ const postSchema = new mongoose.Schema(
     likes: {
         type: Number,
         default: 0
-    },   
+    },
+    likedBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     createdAt: {
       type: Date,
       default: Date.now,
@@ -34,6 +40,15 @@ const postSchema = new mongoose.Schema(
     fileType: {
         type: String,
         default: ''
+    },
+    isShared: {
+      type: Boolean,
+      default: false,
+    },
+    sharedPostId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Post",
+      default: null,
     }
   },
   { timestamps: true }

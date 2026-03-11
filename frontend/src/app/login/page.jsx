@@ -5,9 +5,8 @@ import {useEffect} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 // import {store} from '../../config/redux/store'
 import { useRouter } from 'next/navigation';
-// @ts-expect-error
 import styles from "./style.module.css";
-import { loginUser, registerUser } from '../../config/redux/action/authAction';
+import { getAboutUser, loginUser, registerUser } from '../../config/redux/action/authAction';
 import {emptyMessage} from '../../config/redux/reducer/authReducer';
 
 function LoginComponent() {
@@ -19,21 +18,29 @@ function LoginComponent() {
   const[password,setPassword]=useState("");
   const[username,setUsername]=useState("");
   const[name,setName]=useState("");
- useEffect(() => {
+useEffect(() => {
   if (authState.loggedIn) {
     router.push("/dashboard");
   }
-}, [authState.loggedIn]);
+}, [authState.loggedIn, router]);
  
 useEffect(() => {
   dispatch(emptyMessage());
-},[isLoginMethod]);
+},[isLoginMethod, dispatch]);
 
 useEffect(() => {
-  if(localStorage.getItem("token")){
-    router.push("/dashboard");
-  }
-},[])
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+  dispatch(getAboutUser(token))
+    .unwrap()
+    .then(() => {
+      router.push("/dashboard");
+    })
+    .catch(() => {
+      localStorage.removeItem("token");
+    });
+}, [dispatch, router])
   const handleRegister = async () => {
 
   console.log("register clicked");
@@ -90,7 +97,7 @@ const handleLogin = async () => {
 
         <div className={styles.cardContainer__right}>
           
-            {isLoginMethod?<p>Don't have an account? </p>:<p>Already have an account? </p>}
+            {isLoginMethod?<p>Don&apos;t have an account? </p>:<p>Already have an account? </p>}
                <div onClick={()=>{
              setIsLoginMethod(!isLoginMethod);
             }

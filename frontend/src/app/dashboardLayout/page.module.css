@@ -34,3 +34,18 @@
     height: 24px;
     min-width: 24px; 
 }
+.scrollComponent{
+    display: flex;
+    justify-content: center;
+    
+}
+.homeContainer__extraContainer{
+    display: flex;
+    justify-content: flex-end;
+}
+
+.homeContainer__extraContainer h3{
+    padding: 1rem;
+    margin: 1rem;
+    justify-content: right;
+}

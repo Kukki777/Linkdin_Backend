@@ -1,0 +1,410 @@
+/* ─── LinkedIn-style Profile Page ─── */
+
+.wrapper {
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 1rem 0.5rem 2rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* ─── Profile Card ─── */
+.card {
+  border: none;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.06);
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+
+/* Cover photo banner */
+.coverPhoto {
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(135deg, #c4d4e0 0%, #b0c4d8 40%, #9ab2cc 100%);
+  object-fit: cover;
+  display: block;
+}
+
+/* Default cover gradient when no image */
+.coverDefault {
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(135deg, #c4d4e0 0%, #9ab2cc 100%);
+}
+
+.profileBody {
+  padding: 0 1.5rem 1.25rem;
+  position: relative;
+}
+
+/* Avatar overlapping the cover */
+.avatarWrapper {
+  position: relative;
+  margin-top: -52px;
+  margin-bottom: 0.5rem;
+  display: inline-block;
+}
+
+.avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #ffffff;
+  background: #e5edf5;
+  display: block;
+  box-shadow: 0 2px 8px rgba(0,0,0,.15);
+}
+
+/* Name & headline row */
+.nameRow {
+  margin-top: 0.6rem;
+}
+
+.name {
+  margin: 0 0 0.15rem;
+  color: #000000e6;
+  font-size: 1.45rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.username {
+  margin: 0 0 0.3rem;
+  color: #00000099;
+  font-size: 0.9rem;
+}
+
+.sectionLabel {
+  margin: 0.45rem 0 0.12rem;
+  color: #0000008a;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.meta {
+  margin: 0 0 0.25rem;
+  color: #000000cc;
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.bio {
+  margin: 0 0 0.6rem;
+  color: #000000b3;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* CTA buttons row */
+.profileActions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.btnPrimary {
+  background: #0a66c2;
+  color: #ffffff;
+  border: none;
+  border-radius: 999px;
+  padding: 0.42rem 1.1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btnPrimary:hover { background: #004182; }
+.btnPrimary:disabled {
+  background: #dbe6f2;
+  color: #475569;
+  cursor: not-allowed;
+}
+.btnPrimary:disabled:hover { background: #dbe6f2; }
+
+.btnSecondary {
+  background: transparent;
+  color: #0a66c2;
+  border: 1.5px solid #0a66c2;
+  border-radius: 999px;
+  padding: 0.4rem 1.1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.btnSecondary:hover { background: #eaf0f8; }
+
+/* ─── Divider card ─── */
+.dividerCard {
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.06);
+  padding: 1rem 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+/* ─── Posts Section ─── */
+.postsSection {
+  margin-top: 0;
+}
+
+.postsHeading {
+  margin: 0 0 0.75rem;
+  color: #000000e6;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.postsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+/* ─── Post Card ─── */
+.postCard {
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.05);
+  padding: 1rem 1.25rem 0.75rem;
+  transition: box-shadow 0.15s;
+}
+.postCard:hover {
+  box-shadow: 0 0 0 1px rgba(0,0,0,.12), 0 4px 12px rgba(0,0,0,.08);
+}
+
+.postAuthorRow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.65rem;
+}
+
+.postAuthorAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.postAuthorName {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #000000e6;
+  margin: 0;
+}
+
+.postAuthorMeta {
+  font-size: 0.78rem;
+  color: #00000080;
+  margin: 0;
+}
+
+.sharedLabel {
+  margin: 0 0 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #0a66c2;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.originalInfo {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  color: #00000080;
+  padding: 0.4rem 0.7rem;
+  border-left: 3px solid #c8d8e8;
+  background: #f8fafc;
+  border-radius: 0 6px 6px 0;
+}
+
+.postText {
+  margin: 0;
+  color: #000000cc;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.postImage {
+  margin-top: 0.75rem;
+  width: 100%;
+  border-radius: 8px;
+  max-height: 480px;
+  object-fit: contain;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  display: block;
+}
+
+/* ─── Action bar (like LinkedIn's reaction row) ─── */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 0.3rem;
+}
+
+.actions button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #00000099;
+  padding: 0.55rem 0.75rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: background 0.12s, color 0.12s;
+}
+
+.actions button:hover {
+  background: #f0f4f8;
+  color: #000000cc;
+}
+
+.actions button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.deleteButton {
+  margin-left: auto !important;
+  color: #b42318 !important;
+}
+
+.deleteButton:hover {
+  background: #fef3f2 !important;
+  color: #b42318 !important;
+}
+
+/* ─── Comment Section ─── */
+.commentSection {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.commentComposer {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 0.75rem;
+}
+
+.commentComposerAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #dbe6f0;
+  flex-shrink: 0;
+}
+
+.commentInput {
+  flex: 1;
+  border: 1.5px solid #d0dae5;
+  border-radius: 999px;
+  padding: 0.52rem 1rem;
+  font-size: 0.85rem;
+  outline: none;
+  background: #f8fafc;
+  color: #000000cc;
+  font-family: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.commentInput:focus {
+  border-color: #0a66c2;
+  box-shadow: 0 0 0 2px rgba(10, 102, 194, 0.14);
+  background: #ffffff;
+}
+
+.commentInput::placeholder { color: #00000066; }
+
+.commentSendButton {
+  border: 1.5px solid #0a66c2;
+  background: #0a66c2;
+  color: #ffffff;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.45rem 1rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+
+.commentSendButton:hover:not(:disabled) { background: #004182; border-color: #004182; }
+.commentSendButton:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.commentList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.commentItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+}
+
+.commentAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #dbe6f0;
+  flex-shrink: 0;
+}
+
+.commentBubble {
+  background: #f4f7fa;
+  border-radius: 0 12px 12px 12px;
+  padding: 0.5rem 0.8rem;
+  max-width: 100%;
+  flex: 1;
+}
+
+.commentName {
+  margin: 0 0 0.15rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #000000e6;
+}
+
+.commentText {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #000000cc;
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+/* ─── Utility ─── */
+.info {
+  color: #00000080;
+  font-size: 0.9rem;
+  padding: 0.5rem 0;
+}
+
+.error {
+  color: #b42318;
+  font-size: 0.9rem;
+}
